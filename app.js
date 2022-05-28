@@ -48,16 +48,17 @@ app.post("/compose", function(req, res) {
     res.redirect("/");
 });
 
+
 //using route parameters
 app.get("/posts/:postName", function(req, res) {
-    const requestedTitle = _.lowerCase([req.params.postName]);
+    const requestedTitle = _.lowerCase(req.params.postName);
     posts.forEach(function(post) {
-        const storedTitle = _.lowerCase([post.title]);
+        const storedTitle = _.lowerCase(post.title);
         if (requestedTitle === storedTitle) {
-
-            console.log("Match found")
-        } else {
-            console.log("Match not found")
+            res.render("post", {
+                title: post.title,
+                body: post.body
+            });
         }
     });
 
