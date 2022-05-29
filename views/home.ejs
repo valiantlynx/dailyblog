@@ -8,9 +8,10 @@
             <%= e.title %>
         </h3>
         <p>
-            <%= e.body %>
+            <%= e.body.substring(0, 100) + " ..." %> <a href="/posts/ <%= e.title %>">Read more</a>
         </p>
-        <% console.log(e);});%>
+
+        <% });%>
 
 
             <%- include("partials/footer") -%>

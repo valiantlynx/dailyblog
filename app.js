@@ -52,6 +52,7 @@ app.post("/compose", function(req, res) {
 //using route parameters
 app.get("/posts/:postName", function(req, res) {
     const requestedTitle = _.lowerCase(req.params.postName);
+
     posts.forEach(function(post) {
         const storedTitle = _.lowerCase(post.title);
         if (requestedTitle === storedTitle) {
@@ -59,10 +60,16 @@ app.get("/posts/:postName", function(req, res) {
                 title: post.title,
                 body: post.body
             });
+
         }
     });
 
+
 });
+app.post("/posts", function(req, res) {
+    res.redirect("/posts");
+
+})
 
 //port listening
 app.listen(3000, function() {
