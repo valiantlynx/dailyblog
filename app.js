@@ -3,7 +3,11 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const mongoose = require("mongoose");
 const _ = require("lodash");
+
+mongoose.connect('mongodb+srv://admin-valiantlynx:valiantlynx@cluster0.lujhkmj.mongodb.net/dailyBlog');
+
 let posts = [];
 
 const homeStartingContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper."
@@ -16,6 +20,26 @@ app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+const blogSchema = {
+    name: String
+};
+
+const Blog = mongoose.model("Blog", blogSchema);
+
+const home = new Blog({
+    name: homeStartingContent
+});
+
+const about = new Blog({
+    name: aboutContent
+});
+
+const contact = new Blog({
+    name: contactContent
+});
+
+const defaultItems = [home, about, contact];
 
 //home
 app.get("/", function(req, res) {
