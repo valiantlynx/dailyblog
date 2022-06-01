@@ -6,7 +6,8 @@ const ejs = require("ejs");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 
-mongoose.connect('mongodb+srv://admin-valiantlynx:valiantlynx@cluster0.lujhkmj.mongodb.net/dailyBlog');
+//mongoose.connect('mongodb+srv://admin-valiantlynx:valiantlynx@cluster0.lujhkmj.mongodb.net/dailyBlog');
+mongoose.connect('mongodb://localhost:27017/dailyBlog');
 
 let posts = [];
 
@@ -22,41 +23,97 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const blogSchema = {
-    name: String
+    name: String,
+    blog: String
 };
 
 const Blog = mongoose.model("Blog", blogSchema);
 
 const home = new Blog({
-    name: homeStartingContent
+    name: "Home",
+    blog: homeStartingContent
 });
 
 const about = new Blog({
-    name: aboutContent
+    name: "About Us",
+    blog: aboutContent
 });
 
 const contact = new Blog({
-    name: contactContent
+    name: "Contact Us",
+    blog: contactContent
 });
 
-const defaultItems = [home, about, contact];
+const defaultItems = [];
+
 
 //home
 app.get("/", function(req, res) {
-    res.render("home", {
-        homeContent: homeStartingContent,
-        posts: posts
+
+    Blog.find({ name: "Home" }, function(err, foundItem) {
+        if (foundItem.length === 0) {
+            Blog.insertMany(home, function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Successfully inserted home item into collection");
+                }
+            });
+            res.redirect("/");
+
+        } else {
+            res.render("home", {
+                homeTitle: foundItem[0].name,
+                homeContent: foundItem[0].blog,
+                posts: posts
+            });
+        }
     });
 });
 
+
 //about
 app.get("/about", function(req, res) {
-    res.render("about", { aboutPageContent: aboutContent });
+    Blog.find({ name: "About Us" }, function(err, foundItem) {
+        if (foundItem.length === 0) {
+            Blog.insertMany(about, function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Successfully inserted about item into collection");
+                }
+            });
+            res.redirect("/");
+
+        } else {
+            res.render("about", {
+                aboutTitle: foundItem[0].name,
+                aboutPageContent: foundItem[0].blog
+            });
+        }
+    });
 });
 
 //contact
 app.get("/contact", function(req, res) {
-    res.render("contact", { contactPageContent: contactContent });
+    Blog.find({ name: "Contact Us" }, function(err, foundItem) {
+        if (foundItem.length === 0) {
+            Blog.insertMany(contact, function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("Successfully inserted contact item into collection");
+                }
+            });
+            res.redirect("/");
+
+        } else {
+            res.render("contact", {
+                contactTitle: foundItem[0].name,
+                contactPageContent: foundItem[0].blog
+            });
+        }
+    });
 });
 
 //compose
