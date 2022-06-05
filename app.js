@@ -46,82 +46,47 @@ const contact = new Blog({
 //content posts
 
 const listSchema = {
-    name: String,
-    items: [blogSchema]
+    title: String,
+    body: String
 }
 
 const Post = mongoose.model("Post", listSchema);
-let posts = [];
 
 //home
 app.get("/", function(req, res) {
 
-    Blog.find({ name: "Home" }, function(err, foundItem) {
-        if (foundItem.length === 0) {
-            Blog.insertMany(home, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Successfully inserted home home into collection");
-                }
-            });
-            res.redirect("/");
 
-        } else {
-            console.log(posts);
-            res.render("home", {
-                homeTitle: foundItem[0].name,
-                homeContent: foundItem[0].blog,
-                posts: posts
-            });
-        }
+    Post.find({}, function(err, posts) {
+        res.render("home", {
+            homeTitle: home.name,
+            homeContent: home.blog,
+            posts: posts
+        });
+
     });
+
+
 });
 
 
 //about
 app.get("/about", function(req, res) {
-    Blog.find({ name: "About Us" }, function(err, foundItem) {
-        if (foundItem.length === 0) {
-            Blog.insertMany(about, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Successfully inserted about about into collection");
-                }
-            });
-            res.redirect("/");
 
-        } else {
-            res.render("about", {
-                aboutTitle: foundItem[0].name,
-                aboutPageContent: foundItem[0].blog
-            });
-        }
+    res.render("about", {
+        aboutTitle: about.name,
+        aboutPageContent: about.blog
     });
+
 });
 
 //contact
 app.get("/contact", function(req, res) {
-    Blog.find({ name: "Contact Us" }, function(err, foundItem) {
-        if (foundItem.length === 0) {
-            Blog.insertMany(contact, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Successfully inserted contact contact into collection");
-                }
-            });
-            res.redirect("/");
-
-        } else {
-            res.render("contact", {
-                contactTitle: foundItem[0].name,
-                contactPageContent: foundItem[0].blog
-            });
-        }
+    res.render("contact", {
+        contactTitle: contact.name,
+        contactPageContent: contact.blog
     });
 });
+
 
 //compose
 app.get("/compose", function(req, res) {
@@ -130,47 +95,37 @@ app.get("/compose", function(req, res) {
 });
 
 app.post("/compose", function(req, res) {
-    let title = req.body.postTitle
-    let body = req.body.postText
 
-    const post = {
-        title: title,
-        body: body
-    };
+    const post = new Post({
+        title: req.body.postTitle,
+        body: req.body.postText,
+    });
 
-    console.log(post);
-    Blog.insertMany(post, function(err) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log("Successfully inserted contact contact into collection");
+    post.save(function(err) {
+        if (!err) {
+            res.redirect("/");
         }
     });
-    posts.push(post);
-    res.redirect("/");
 });
 
 
 //using route parameters
-app.get("/posts/:postName", function(req, res) {
-    const requestedTitle = _.lowerCase(req.params.postName);
-
-    Blog.find({ name: requestedTitle }, function(err, foundItem) {
-        console.log(foundItem);
-
+app.get("/posts/:postId", function(req, res) {
+    const requestedPostId = req.params.postId;
+    Post.findOne({ _id: requestedPostId }, function(err, post) {
         res.render("post", {
-            title: foundItem.name,
-            body: foundItem.blog,
+            title: post.title,
+            body: post.body
         });
-
     });
+    //res.redirect("/");
 });
 
 app.post("/posts", function(req, res) {
-
     res.redirect("/posts");
+});
 
-})
+
 
 //port listening
 app.listen(3000, function() {

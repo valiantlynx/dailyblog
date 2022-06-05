@@ -10,7 +10,7 @@
             <%= e.title %>
         </h3>
         <p>
-            <%= e.body.substring(0, 100) + " ..." %> <a href="/posts/ <%= e.title %>">Read more</a>
+            <%= e.body.substring(0, 100) + " ..." %> <a href="/posts/<%= e._id %>">Read more</a>
         </p>
 
         <% });%>
